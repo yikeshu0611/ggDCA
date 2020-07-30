@@ -1,0 +1,19 @@
+Package: ggDCA
+Title: Calculate and Plot Decision Curve
+Version: 1.0
+Authors@R: 
+    c(
+    person("Jing","Zhang",role = c("aut", "cre"),email = "zj391120@163.com"),
+    person("Zhi", "Jin", role="aut")
+    )
+Description: Calculate and Plot Decision Curve.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Imports: 
+    ggplot2,
+    do
+Suggests: 
+    rms
