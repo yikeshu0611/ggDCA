@@ -3,8 +3,9 @@
 #' @param ... one or more results of logistic or cox regression
 #' @param model.names names for models
 #' @param include.cutoff logical. Whether the cutoff threshold should be included.
+#'
 #' @importFrom stats as.formula predict update
-#' @return
+#' @return a dataframe
 #' @export
 #'
 #' @examples
@@ -54,7 +55,7 @@ thresholds <- function(fit,model.name=NULL,include.cutoff=TRUE) {
     data.frame(thresholds,TPR,FPR,NB,model=model.name)
 }
 base <- function(fit,thresholds) {
-    real=do::model.data(fit)[,do::model.y(fit)]
+    real=model.data(fit)[,model.y(fit)]
     real=ifelse(real==max(real),1,0)
     # ALL IS 1
     TP=rep(table(real)['1'],length(thresholds))

@@ -14,7 +14,7 @@ dca(..., model.names = do::get_names(...), include.cutoff = TRUE)
 \item{include.cutoff}{logical. Whether the cutoff threshold should be included.}
 }
 \value{
-
+a dataframe
 }
 \description{
 Calculate Decision Curve Data
