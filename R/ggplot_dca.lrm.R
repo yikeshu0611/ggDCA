@@ -8,13 +8,39 @@
 #' @method ggplot dca.lrm
 #' @return a ggplot2 picture
 #' @export
-#'
 #' @examples
-#' 1+1
+#' library(rmda)
+#' library(ggDCA)
+#' library(rms)
+#' data(dcaData)
+#'
+#' base.model <- lrm(Cancer~Age + Female + Smokes,
+#'                   data = dcaData)
+#'
+#' d <-dca(base.model)
+#'
+#' ggplot(d)
+#'
+#' \donttest{
+#' full.model <- lrm(Cancer~Age + Female + Smokes + Marker1 + Marker2,
+#'                   data = dcaData)
+#'
+#' d <- dca(base.model,full.model)
+#'
+#' ggplot(d)
+#'
+#' ggplot(d,color=FALSE)
+#'
+#' ggplot(d,linetype = FALSE)
+#'
+#' }
+#' AUDC(d)
+#' range(d)
+#'
 ggplot.dca.lrm <- function(data,
                            color=TRUE,
                            linetype=TRUE){
-    # op = options(warn = -1)
+    opt <- options(warn = -1)
     data=as.data.frame(data)
     max=max(data[,'NB'])
     # if (max < 1) max=1
@@ -33,11 +59,13 @@ ggplot.dca.lrm <- function(data,
         stop('color and linetype can not both be FALSE')
     }
 
-    p + ylim(ylim)+
+    p <- p +
         theme_classic(base_size = 15)+
         xlab('Risk Threshold')+
         ylab('Net Benefit')+
-        theme(legend.title=element_blank())
-    # on.exit(options(op))
+        theme(legend.title=element_blank())+
+        ylim(ylim)
+    return(p)
+    options(opt)
 }
 

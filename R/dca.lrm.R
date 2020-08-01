@@ -42,6 +42,7 @@ thresholds.lrm <- function(fit,model.name=NULL) {
     data.frame(thresholds,TPR,FPR,NB,model=model.name)
 }
 base.lrm <- function(fit,thresholds) {
+    if (min(thresholds)>0) thresholds=c(0,thresholds)
     real=model.data(fit)[,model.y(fit)]
     real=ifelse(real==max(real),1,0)
     # ALL IS 1

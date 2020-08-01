@@ -20,5 +20,32 @@ a ggplot2 picture
 Plot Decision Curve
 }
 \examples{
-1+1
+library(rmda)
+library(ggDCA)
+library(rms)
+data(dcaData)
+
+base.model <- lrm(Cancer~Age + Female + Smokes,
+                  data = dcaData)
+
+d <-dca(base.model)
+
+ggplot(d)
+
+\donttest{
+full.model <- lrm(Cancer~Age + Female + Smokes + Marker1 + Marker2,
+                  data = dcaData)
+
+d <- dca(base.model,full.model)
+
+ggplot(d)
+
+ggplot(d,color=FALSE)
+
+ggplot(d,linetype = FALSE)
+
+}
+AUDC(d)
+range(d)
+
 }

@@ -6,8 +6,6 @@
 #' @importFrom set %not%
 #' @export
 #'
-#' @examples
-#' 1+1
 AUDC <- function(x){
     x=x[x$thresholds != 0,]
     model=levels(x$model)

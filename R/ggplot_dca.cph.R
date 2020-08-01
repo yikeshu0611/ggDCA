@@ -10,12 +10,10 @@
 #' @return a ggplot2 picture
 #' @export
 #'
-#' @examples
-#' 1+1
 ggplot.dca.cph <- function(data,color=TRUE,linetype=TRUE){
-    # op = options(warn = -1)
+    op = options(warn = -1)
     data=as.data.frame(data)
-    max=max(data[!data$model %in% c('none','all'),'NB'])
+    max=max(data[,'NB'])
     # if (max < 1) max=1
     ylim=c(-max*0.382,max)
     p <- ggplot(data,aes_string(x='thresholds',y='NB',group='model'))
@@ -32,11 +30,12 @@ ggplot.dca.cph <- function(data,color=TRUE,linetype=TRUE){
         stop('color and linetype can not both be FALSE')
     }
 
-    p + ylim(ylim)+
+    p <- p + ylim(ylim)+
         theme_classic(base_size = 15)+
         xlab('Risk Threshold')+
         ylab('Net Benefit')+
         theme(legend.title=element_blank())
-    # on.exit(options(op))
+    return(p)
+    options(op)
 }
 

@@ -6,7 +6,14 @@ Authors@R:
     person("Jing","Zhang",role = c("aut", "cre"),email = "zj391120@163.com"),
     person("Zhi", "Jin", role="aut")
     )
-Description: Calculate and Plot Decision Curve.
+Description: Diagnostic and prognostic models are typically evaluated with 
+    measures of accuracy that do not address clinical consequences. 
+    Decision-analytic techniques allow assessment of clinical outcomes but 
+    often require collection of additional information and may be cumbersome to 
+    apply to models that yield a continuous result.
+  Decision curve analysis is a suitable method for evaluating 
+    alternative diagnostic and prognostic strategies that has advantages over 
+    other commonly used measures and techniques.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
@@ -17,3 +24,5 @@ Imports:
     do,
     set,
     rms
+Suggests: 
+    rmda

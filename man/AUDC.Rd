@@ -15,6 +15,3 @@ Area under decision curves for each model.
 \description{
 Area under Decision Curve
 }
-\examples{
-1+1
-}

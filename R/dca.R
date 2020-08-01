@@ -10,8 +10,6 @@
 #'     positive rate, NB: net benefit, model: model names.
 #' @export
 #' @references Vickers, A. J., & Elkin, E. B. (2006). Decision Curve Analysis: A Novel Method for Evaluating Prediction Models. Medical Decision Making, 26(6), 565–574. https://doi.org/10.1177/0272989X06295361
-#' @examples
-#' 1+1
 dca <- function(...,
                 model.names=do::get_names(...),
                 test.harm=0,

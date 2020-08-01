@@ -19,6 +19,3 @@ a ggplot2 picture
 \description{
 Plot Decision Curve
 }
-\examples{
-1+1
-}
