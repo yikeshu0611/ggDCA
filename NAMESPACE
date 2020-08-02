@@ -2,10 +2,12 @@
 
 S3method(ggplot,dca.cph)
 S3method(ggplot,dca.lrm)
+S3method(ggplot,rFP.p100)
 S3method(range,dca.cph)
 S3method(range,dca.lrm)
 export(AUDC)
 export(dca)
+export(rFP.p100)
 importFrom(ggplot2,aes_string)
 importFrom(ggplot2,element_blank)
 importFrom(ggplot2,geom_line)

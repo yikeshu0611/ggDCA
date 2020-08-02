@@ -25,8 +25,7 @@ library(ggDCA)
 library(rms)
 data(dcaData)
 
-base.model <- lrm(Cancer~Age + Female + Smokes,
-                  data = dcaData)
+base.model <- lrm(Cancer~Age + Female + Smokes,data = dcaData)
 
 d <-dca(base.model)
 
@@ -44,6 +43,9 @@ ggplot(d,color=FALSE)
 
 ggplot(d,linetype = FALSE)
 
+rfp=rFP.p100(d)
+
+ggplot(rfp)
 }
 AUDC(d)
 range(d)
