@@ -4,78 +4,142 @@ dca.cph <- function(fit.list,
                 test.harm=0,
                 times='median'){
     if (length(fit.list)==0) return(NULL)
+    all='all'
+    facet='single'
     # if only one fit
-    # means see one fit at different times
+    # evaluate one fit at different times
     if (length(fit.list)==1){
         if (is.null(model.names)) model.names=times
-        df=lapply(1:length(times), function(i) thresholds.cph(fit=fit.list[[1]],
+        # thresholds
+        dfi=lapply(1:length(times), function(i) thresholds.cph(fit=fit.list[[1]],
                                                               model.name = model.names[i],
                                                               time = times[i]))
+        if (length(times)>1){
+            for(i in 1:length(times)){
+                dfi.i=dfi[[i]]
+                dfi.i$model=paste0(model.names,'-',times[i])
+                dfi[[i]]=dfi.i
+            }
+            model.names=paste0(model.names,'-',times)
+        }
+        res.threshold=do.call(rbind,dfi)
+        res.threshold$NB=res.threshold$NB-test.harm
+        # y is the same
+        # get the most range for ref
+        dfii=lapply(1:length(times), function(i) base.cph(fit=fit.list[[1]],
+                                                     time=times[i],
+                                                     thresholds=res.threshold$thresholds))
+        if (length(times)>1){
+            for(i in 1:length(times)){
+                dfii.i=dfii[[i]]
+                dfii.i[dfii.i$model=='all','model']=paste0('all-',times[i])
+                dfii[[i]]=dfii.i
+            }
+            all=paste0('all-',times)
+        }
+        res.base =do.call(rbind,dfii)
     }else if (length(fit.list)>1){
-        # see many fits at one time
+        # evaluate many fits at one time
         if (length(times)==1){
             if (is.null(model.names)) model.names=model.names
-            df=lapply(1:length(fit.list), function(i) thresholds.cph(fit=fit.list[[i]],
+            dfi=lapply(1:length(fit.list), function(i) thresholds.cph(fit=fit.list[[i]],
                                                                      model.name = model.names[i],
                                                                      time = times))
-        }else{
-            stop('times can only be one when fits are many')
+            res.threshold=do.call(rbind,dfi)
+            res.threshold$NB=res.threshold$NB-test.harm
+            # y is the same
+            # get the most range for ref
+            res.base = base.cph(fit=fit.list[[1]],
+                                time=times,
+                                thresholds=res.threshold$thresholds)
+        }else if(length(times)>1){
+            facet='facet'
+            for(j in 1:length(times)){
+                if (j==1) dfi=list()
+                dfi2=lapply(1:length(fit.list), function(i) thresholds.cph(fit=fit.list[[i]],
+                                                                          model.name = model.names[i],
+                                                                          time = times[j]))
+                dfi=c(dfi,list(do.call(rbind,dfi2)))
+            }
+            res.threshold=do.call(rbind,dfi)
+            res.threshold$NB=res.threshold$NB-test.harm
+            # y is the same
+            # get the most range for ref
+            base.lp=lapply(times, function(i) base.cph(fit=fit.list[[1]],
+                                               time=i,
+                                               thresholds=res.threshold$thresholds))
+            res.base = do.call(rbind,base.lp)
+
         }
+
     }
-    res.threshold=do.call(rbind,df)
-    res.threshold$NB=res.threshold$NB-test.harm
-    # y is the same
-    # get the most range for ref
-    res.base = base.cph(fit=fit.list[[1]],
-                        thresholds=sort(unique(res.threshold$thresholds)))
+
     res=rbind(res.threshold,res.base)
-    class(res)=c('dca.cph','data.frame')
-    res$model=factor(res$model,levels = c(model.names,'all','none'))
+    class(res)=c('dca.cph',facet,'data.frame')
+    res$model=factor(res$model,levels = c(model.names,all,'none'))
     res
 }
-thresholds.cph <- function(fit,model.name=NULL,time='median') {
-    if (is.null(model.name)) model.name=sub(' {2,}',' ',paste0(deparse(fit$terms)))
-    # get fitted, thresholds, real
-    model.time=model.data(fit)[,model.y(fit)[1]]
-    if (time=='median') time=median(model.time,na.rm = TRUE)
-    surv <- rms::Survival(to.cph(fit))
-    fitted=1-surv(time, fit$linear.predictors)
-    thresholds=sort(unique(fitted))
-    real=model.data(fit)[,model.y(fit)[2]]
-    # whatever 2 or more levels of y
-    # we choose the biggest as 1
-    # so it can be used for psm
-    real=ifelse(real==max(real),1,0)
+thresholds.cph <- function(fit,time,model.name=NULL){
+    fit=to.cph(fit)
+    # data
+    data=do::model.data(fit)
+    time.range=range(data[,ncol(data)-1])
+    if (time < time.range[1] | time > time.range[2]){
+        stop(paste0('time must between ',paste0(time.range,collapse = '~')))
+    }
+    # pred
+    pred=1-Survival(fit)(time,fit$linear.predictors)
     # thresholds
-    TP=sapply(thresholds, function(x) table(paste0(ifelse(fitted>=x,1,0),real))['11'])
-    FP=sapply(thresholds, function(x) table(paste0(pred=ifelse(fitted>=x,1,0),real))['10'])
-    TP[is.na(TP)]=0
-    FP[is.na(FP)]=0
-    names(TP)=NULL
-    names(FP)=NULL
-    NB=TP/length(real)-FP/length(real)*thresholds/(1-thresholds)
-    TPR=TP/length(real)
-    FPR=FP/length(real)
-    data.frame(thresholds,TPR,FPR,NB,model=model.name,time=time)
+    thresholds=sort(unique(pred))
+    # thresholds cannot be 1, because thresholds/(1-thresholds) will be NAN
+    thresholds[thresholds==1]=1-10^-7
+    # reality, to get the cumulative data
+    filter=lapply(thresholds, function(i) pred>=i)
+    pred.Positive=sapply(filter, function(i) sum(i))
+    # pre.Positive is divied into two parts: TP and FP
+    # TP and FP can be calculated by rate in filter data
+    # rate is from reality summary data not from model
+    filter.data=lapply(filter, function(i) data[i,])
+    txt=paste0('survfit(',names(fit$model)[1],'~1,data=i)')
+    survfitted=lapply(filter.data, function(i) eval(parse(text=txt)))
+    TPR.row=1-sapply(survfitted, function(i) ifelse(is.null(summary(i,time)$surv),
+                                                  0,summary(i,time)$surv))
+    FPR.row=1-TPR.row
+    TP=pred.Positive*TPR.row
+    FP=pred.Positive*FPR.row
+    NB=TP/nrow(data)-FP/nrow(data)*thresholds/(1-thresholds)
+    TPR=TP/nrow(data)
+    FPR=FP/nrow(data)
+    if (is.null(model.name)) model.name=time
+    data.frame(thresholds,TPR,FPR,NB,time,model=model.name)
 }
-base.cph <- function(fit,thresholds) {
+
+base.cph <- function(fit,time,thresholds=NULL){
+    fit=to.cph(fit)
+    # data and check time
+    data=do::model.data(fit)
+    time.range=range(data[,ncol(data)-1])
+    if (time < time.range[1] | time > time.range[2]){
+        stop(paste0('time must between ',paste0(time.range,collapse = '~')))
+    }
+    # thresholds
+    if (is.null(thresholds)){
+        pred=1-Survival(fit)(time,fit$linear.predictors)
+        thresholds=pred
+    }
+    thresholds=sort(unique(thresholds))
     if (min(thresholds)>0) thresholds=c(0,thresholds)
-    real=model.data(fit)[,model.y(fit)[2]]
-    real=ifelse(real==max(real),1,0)
-    # ALL IS 1
-    TP=rep(table(real)['1'],length(thresholds))
-    FP=rep(table(real)['0'],length(thresholds))
-    TP[is.na(TP)]=0
-    FP[is.na(FP)]=0
-    names(TP)=NULL
-    names(FP)=NULL
-    NB=TP/length(real)-FP/length(real)*thresholds/(1-thresholds)
-    TPR=TP/length(real)
-    FPR=FP/length(real)
-    df1=data.frame(thresholds,TPR,FPR,NB,model='all',time=NA)
-    # ALL IS 0 is 0
-    TPR=FPR=NB=rep(0,length(thresholds))
-    df2=data.frame(thresholds,TPR,FPR,NB,model='none',time=NA)
-    # rbind
+    # all
+    txt=paste0('survfit(',names(fit$model)[1],'~1,data=data)')
+    survfitted=eval(parse(text=txt))
+    TPR=1-summary(survfitted,time)$surv
+    if (is.null(TPR)) TPR=0
+    FPR=1-TPR
+    NB=TPR-FPR*thresholds/(1-thresholds)
+    df1=data.frame(thresholds,TPR,FPR,NB,time,model='all')
+    # 0
+    df2=data.frame(thresholds,TPR=0,FPR=0,NB=0,time,model='none')
     rbind(df1,df2)
 }
+
+

@@ -14,7 +14,10 @@ dca <- function(...,
                 model.names=do::get_names(...),
                 test.harm=0,
                 times='median'){
-    fit.list<-list(...)
+    fit.list<<-list(...)
+    model.names<<-model.names
+    times<<-times
+    test.harm<<-test.harm
     check=sapply(fit.list, function(i) 'coxph' %in% class(i))
     fit.lrm=fit.list[!check]
     fit.cph=fit.list[check]

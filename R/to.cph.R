@@ -23,7 +23,7 @@ coxph2cph <-function(fit){
         data=paste0(deparse(data.name),'=','fit$model')
         eval(parse(text = data))
         fit=eval(parse(text=call.new))
-        update(fit,surv=TRUE)
+        update(fit,surv=TRUE,x=TRUE,y=TRUE,model=TRUE)
     }else{
         stop('data must be given in formula')
     }

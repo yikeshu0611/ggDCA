@@ -4,7 +4,7 @@
 \alias{ggplot.dca.lrm}
 \title{Plot Decision Curve}
 \usage{
-\method{ggplot}{dca.lrm}(data, color = TRUE, linetype = TRUE)
+\method{ggplot}{dca.lrm}(data, color = TRUE, linetype = TRUE, lwd = 1.05)
 }
 \arguments{
 \item{data}{results of dca() function}

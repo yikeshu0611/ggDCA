@@ -1,3 +1,11 @@
+
+data.frame(matrix(c('yes','yes','yes',
+                    'character','interger','numeric',
+                    'character','interger','numeric'),byrow = T,
+                  ncol = 3,dimnames = list(c('logic','one','many'),
+                                           c('color','linetype','lwd'))))
+
+
 library(rmda)
 library(rms)
 data(dcaData)
@@ -6,7 +14,7 @@ base.model <- lrm(Cancer~Age + Female + Smokes,data = dcaData)
 d <-dca(base.model)
 
 # as default, lines were classified by linetype and color
-ggplot(data = d)
+ggplot(data = d,lwd=c(T,F,F))
 
 # depress color
 # classified by linetype
