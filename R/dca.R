@@ -4,8 +4,10 @@
 #' @param model.names names for models
 #' @param test.harm test harm, default is 0
 #' @param times times for cox regresion, default is 'median'
+#' @param new.data new data for validation
 #'
-#' @importFrom stats as.formula predict update median
+#' @importFrom stats as.formula predict update median complete.cases
+#' @importFrom rms Survival
 #' @return a dataframe contains thresholds, TPR: true positive rate, FPR: false
 #'     positive rate, NB: net benefit, model: model names.
 #' @export
@@ -13,20 +15,26 @@
 dca <- function(...,
                 model.names=do::get_names(...),
                 test.harm=0,
+                new.data=NULL,
                 times='median'){
-    fit.list<<-list(...)
-    model.names<<-model.names
-    times<<-times
-    test.harm<<-test.harm
+    fit.list<-list(...)
+    model.names<-model.names
+    times<-times
+    test.harm<-test.harm
+    new.data<-new.data
     check=sapply(fit.list, function(i) 'coxph' %in% class(i))
     fit.lrm=fit.list[!check]
     fit.cph=fit.list[check]
-    res.lrm=dca.lrm(fit.list = fit.lrm,
-            model.names = model.names[!check],
-            test.harm = test.harm)
-    res.cph=dca.cph(fit.list = fit.cph,
-                    model.names = model.names[check],
-                    test.harm = test.harm,
-                    times=times)
-    unique(rbind(res.lrm,res.cph))
+    if (length(fit.cph)>0){
+        dca.cph(fit.list = fit.cph,
+                model.names = model.names[check],
+                test.harm = test.harm,
+                times=times,
+                new.data=new.data)
+    }else if (length(fit.lrm)>0){
+        dca.lrm(fit.list = fit.lrm,
+                model.names = model.names[!check],
+                test.harm = test.harm,
+                new.data=new.data)
+    }
 }

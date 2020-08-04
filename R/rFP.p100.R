@@ -7,16 +7,16 @@
 #' @export
 #'
 rFP.p100 <- function(x){
-    model.all = levels(x$model) %not% 'all' %not% 'none'
+    model.all = levels(x$model)
     for(i in 1:length(model.all)){
         if (i==1) df=NULL
         model=model.all[i]
         thresholds = (x$thresholds)[x$model==model.all]
         NB.medel=(x$NB)[x$model==model.all]
-        NB.all=(x$NB)[x$model=='all' & x$thresholds %in% thresholds]
+        NB.all=(x$NB)[x$model=='All' & x$thresholds %in% thresholds]
         advantage=NB.medel-NB.all
         rFP.p100=advantage*100/(thresholds/(1-thresholds))
-        dfi=data.frame(thresholds,rFP.p100,model=model.all)
+        dfi=data.frame(thresholds,rFP.p100,model=model)
         df=rbind(df,dfi)
     }
     class(df)=c('rFP.p100','data.frame')

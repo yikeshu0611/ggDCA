@@ -23,6 +23,7 @@ Imports:
     ggplot2,
     do,
     set,
-    rms
+    rms,
+    base.rms
 Suggests: 
     rmda

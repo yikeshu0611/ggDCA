@@ -12,6 +12,8 @@
 \item{color}{logical, whether models will be classified by color}
 
 \item{linetype}{logical, whether models will be classified by line type}
+
+\item{lwd}{line width}
 }
 \value{
 a ggplot2 picture

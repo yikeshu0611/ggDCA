@@ -1,11 +1,13 @@
 #' Plot Decision Curve
 
 #' @param data results of dca() function
+#'
 #' @param color logical, whether models will be classified by color
 #' @param linetype logical, whether models will be classified by line type
+#' @param lwd line width
 #'
 #' @importFrom ggplot2 ggplot aes_string geom_line ylim theme_classic xlab ylab element_blank theme
-#' @importFrom ggplot2 facet_wrap
+#' @importFrom ggplot2 facet_wrap scale_size_manual
 #' @method ggplot dca.cph
 #' @return a ggplot2 picture
 #' @export

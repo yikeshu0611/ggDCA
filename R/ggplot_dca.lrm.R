@@ -2,7 +2,9 @@
 #'
 #' @param data results of dca() function
 #' @param color logical, whether models will be classified by color
+#' @param lwd line width
 #' @param linetype logical, whether models will be classified by line type
+#'
 #' @importFrom ggplot2 ggplot aes_string geom_line ylim theme_classic xlab ylab element_blank theme
 #' @importFrom ggplot2 xlim scale_linetype_manual scale_color_manual
 #' @method ggplot dca.lrm
@@ -32,7 +34,7 @@
 #'
 #' ggplot(d,linetype = FALSE)
 #'
-#' rfp=rFP.p100(d)
+#' rfp=rFP.p100(x=d)
 #'
 #' ggplot(rfp)
 #' }

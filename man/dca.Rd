@@ -4,7 +4,13 @@
 \alias{dca}
 \title{Calculate Decision Curve Data}
 \usage{
-dca(..., model.names = do::get_names(...), test.harm = 0, times = "median")
+dca(
+  ...,
+  model.names = do::get_names(...),
+  test.harm = 0,
+  new.data = NULL,
+  times = "median"
+)
 }
 \arguments{
 \item{...}{one or more results of logistic or cox regression}
@@ -12,6 +18,8 @@ dca(..., model.names = do::get_names(...), test.harm = 0, times = "median")
 \item{model.names}{names for models}
 
 \item{test.harm}{test harm, default is 0}
+
+\item{new.data}{new data for validation}
 
 \item{times}{times for cox regresion, default is 'median'}
 }
