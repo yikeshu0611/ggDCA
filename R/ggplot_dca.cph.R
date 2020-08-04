@@ -8,6 +8,7 @@
 #'
 #' @importFrom ggplot2 ggplot aes_string geom_line ylim theme_classic xlab ylab element_blank theme
 #' @importFrom ggplot2 facet_wrap scale_size_manual
+#' @importFrom rms cph
 #' @method ggplot dca.cph
 #' @return a ggplot2 picture
 #' @export
