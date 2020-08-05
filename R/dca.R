@@ -7,7 +7,7 @@
 #' @param new.data new data for validation
 #'
 #' @importFrom stats as.formula predict update median complete.cases
-#' @importFrom rms Survival
+#' @importFrom rms Survival lrm
 #' @return a dataframe contains thresholds, TPR: true positive rate, FPR: false
 #'     positive rate, NB: net benefit, model: model names.
 #' @export

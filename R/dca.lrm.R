@@ -54,10 +54,17 @@ thresholds.lrm <- function(fit,model.name=NULL,new.data=NULL) {
     # KEY: real and fitted
     if (is.null(model.name)) model.name=sub(' {2,}',' ',paste0(deparse(fit$terms)))
     fit = to.lrm(fit)
+    message('fit')
+    # print(fit)
     if (is.null(new.data)) data=model.data(fit) else data= new.data
     real=data[,model.y(fit)]
+    message('real')
+    # print(real)
     fitted=predict(fit,new.data=data,type = 'fitted')
+    fitted=fitted[!is.na(fitted)]
     thresholds=sort(unique(fitted))
+    message('thresholds')
+    # print(thresholds)
     # whatever 2 or more levels of y
     # we choose the biggest as 1
     # so it can be used for psm
