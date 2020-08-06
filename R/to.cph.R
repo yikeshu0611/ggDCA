@@ -16,10 +16,7 @@ coxph2cph <-function(fit){
     call.new=trans.base2rms(call.new)
     data.name=fit$call$data
     if (!is.null(data.name)){
-        fit$model$timeggg=as.numeric(fit$model[,1])[1:nrow(fit$model)]
-        fit$model$eventggg=as.numeric(fit$model[,1])[-c(1:nrow(fit$model))]
-        colnames(fit$model)[(ncol(fit$model)-1):ncol(fit$model)]= strsplit(do::Replace0(call,c('.*formula = Surv\\(','\\) ~.*')),', ')[[1]]
-        fit$model=fit$model[,-1]
+        fit$model=model.data(fit)
         data=paste0(deparse(data.name),'=','fit$model')
         eval(parse(text = data))
         fit=eval(parse(text=call.new))

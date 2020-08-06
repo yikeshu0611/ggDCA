@@ -165,7 +165,8 @@ base.cph <- function(fit,time='median',thresholds=NULL,new.data=NULL){
     # All
     txt=paste0('survfit(',names(fit$model)[1],'~1,data=data)')
     survfitted=eval(parse(text=txt))
-    TPR=1-summary(survfitted,time)$surv
+    TPR=summary(survfitted,time)$surv
+    TPR=1-TPR
     if (is.null(TPR)) TPR=0
     FPR=1-TPR
     NB=TPR-FPR*thresholds/(1-thresholds)
