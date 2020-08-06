@@ -1,10 +1,14 @@
-
-dca.cph <- function(fit.list,
-                model.names=NULL,
+#' @method dca cph
+#' @export
+#' @name dca
+dca.cph <- function(...,
+                model.names=do::get_names(...),
                 test.harm=0,
                 new.data=NULL,
                 times='median'){
+    fit.list=list(...)
     if (length(fit.list)==0) return(NULL)
+    if (length(test.harm)==1) test.harm=rep(test.harm,length(fit.list))
     all='All'
     facet='single'
     if (!is.null(new.data)){
@@ -16,16 +20,20 @@ dca.cph <- function(fit.list,
     if (length(fit.list)==1){
         if (is.null(model.names)) model.names=times
         # thresholds
-        dfi=lapply(1:length(times), function(i) thresholds.cph(fit=fit.list[[1]],
-                                                              model.name = model.names[i],
-                                                              time = times[i],
-                                                              new.data=if (is.null(new.data)) model.data(fit.list[[1]]) else new.data))
+        dfi=lapply(1:length(times),
+                   function(i) thresholds.cph(fit=fit.list[[1]],
+                                              model.name = model.names[1],
+                                              time = times[i],
+                                              test.harm=test.harm[1],
+                                              new.data=if (is.null(new.data)) model.data(fit.list[[1]]) else new.data))
         # Validate for: one time, one fit, cause we want to plot one time, one fit with validate together
         if (!is.null(new.data) & length(times)==1){
-            dfi.validate=lapply(1:length(times), function(i) thresholds.cph(fit=fit.list[[1]],
-                                                                   model.name = model.names[1],
-                                                                   time = times[1],
-                                                                   new.data=model.data(fit.list[[1]])))
+            dfi.validate=lapply(1:length(times),
+                                function(i) thresholds.cph(fit=fit.list[[1]],
+                                                           model.name = model.names[1],
+                                                           time = times[1],
+                                                           test.harm=test.harm[1],
+                                                           new.data=model.data(fit.list[[1]])))
             dfi.v2=do.call(rbind,dfi.validate)
             dfi.v2$model='Validate'
             model.names=c(model.names,'Validate')
@@ -41,7 +49,6 @@ dca.cph <- function(fit.list,
             model.names=paste0(model.names,'-',times)
         }
         res.threshold=do.call(rbind,dfi)
-        res.threshold$NB=res.threshold$NB-test.harm
         # y is the same
         # get the most range for ref
         dfii=lapply(1:length(times), function(i) base.cph(fit=fit.list[[1]],
@@ -57,17 +64,16 @@ dca.cph <- function(fit.list,
             all=paste0('All-',times)
         }
         res.base =do.call(rbind,dfii)
-    }
-    else if (length(fit.list)>1){
+    }else if (length(fit.list)>1){
         # evaluate many fits at one time
         if (length(times)==1){
             if (is.null(model.names)) model.names=model.names
             dfi=lapply(1:length(fit.list), function(i) thresholds.cph(fit=fit.list[[i]],
                                                                      model.name = model.names[i],
                                                                      time = times,
+                                                                     test.harm=test.harm[i],
                                                                      new.data=if (is.null(new.data)) model.data(fit.list[[i]]) else new.data))
             res.threshold=do.call(rbind,dfi)
-            res.threshold$NB=res.threshold$NB-test.harm
             # y is the same
             # get the most range for ref
             res.base = base.cph(fit=fit.list[[1]],
@@ -81,11 +87,11 @@ dca.cph <- function(fit.list,
                 dfi2=lapply(1:length(fit.list), function(i) thresholds.cph(fit=fit.list[[i]],
                                                                           model.name = model.names[i],
                                                                           time = times[j],
+                                                                          test.harm=test.harm[i],
                                                                           new.data=if (is.null(new.data)) model.data(fit.list[[i]]) else new.data))
                 dfi=c(dfi,list(do.call(rbind,dfi2)))
             }
             res.threshold=do.call(rbind,dfi)
-            res.threshold$NB=res.threshold$NB-test.harm
             # y is the same
             # get the most range for ref
             base.lp=lapply(times, function(i) base.cph(fit=fit.list[[1]],
@@ -102,7 +108,7 @@ dca.cph <- function(fit.list,
     res$model=factor(res$model,levels = c(model.names,all,'None'))
     res
 }
-thresholds.cph <- function(fit,time='median',model.name=NULL,new.data=NULL){
+thresholds.cph <- function(fit,time='median',model.name=NULL,new.data=NULL,test.harm=0){
     fit=to.cph(fit)
     # data
     if (is.null(new.data)) data=model.data(fit) else data= new.data
@@ -132,7 +138,7 @@ thresholds.cph <- function(fit,time='median',model.name=NULL,new.data=NULL){
     FPR.row=1-TPR.row
     TP=pred.Positive*TPR.row
     FP=pred.Positive*FPR.row
-    NB=TP/nrow(data)-FP/nrow(data)*thresholds/(1-thresholds)
+    NB=TP/nrow(data)-FP/nrow(data)*thresholds/(1-thresholds)-test.harm
     TPR=TP/nrow(data)
     FPR=FP/nrow(data)
     if (is.null(model.name)) model.name=time

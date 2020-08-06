@@ -1,56 +1,33 @@
 #' Plot Decision Curve
-#'
+
 #' @param data results of dca() function
-#' @param color logical, whether models will be classified by color
-#' @param lwd line width
-#' @param linetype logical, whether models will be classified by line type
 #'
-#' @importFrom ggplot2 ggplot aes_string geom_line ylim theme_classic xlab ylab element_blank theme
-#' @importFrom ggplot2 xlim scale_linetype_manual scale_color_manual
-#' @method ggplot dca.lrm
+#' @param color logical, whether models will be classified by color
+#' @param linetype logical, whether models will be classified by line type
+#' @param lwd line width
+#' @param mapping ignore
+#' @param ... ignore
+#' @param environment ignore
+#' @name ggplot
 #' @return a ggplot2 picture
 #' @export
-#' @examples
-#' library(rmda)
-#' library(ggDCA)
-#' library(rms)
-#' data(dcaData)
 #'
-#' base.model <- lrm(Cancer~Age + Female + Smokes,data = dcaData)
-#'
-#' d <-dca(base.model)
-#'
-#' ggplot(d)
-#'
-#' \donttest{
-#' full.model <- lrm(Cancer~Age + Female + Smokes + Marker1 + Marker2,
-#'                   data = dcaData)
-#'
-#' d <- dca(base.model,full.model)
-#'
-#' ggplot(d)
-#'
-#' ggplot(d,color=FALSE)
-#'
-#' ggplot(d,linetype = FALSE)
-#'
-#' rfp=rFP.p100(x=d)
-#'
-#' ggplot(rfp)
-#' }
-#' AUDC(d)
-#' range(d)
-#'
+#' @method ggplot dca.lrm
+#' @rdname ggplot
+#' @export
 ggplot.dca.lrm <- function(data,
+                           mapping,
                            color=TRUE,
                            linetype=TRUE,
-                           lwd=1.05){
+                           lwd=1.05,
+                           ...,
+                           environment = parent.frame()){
     opt <- options(warn = -1)
     data=as.data.frame(data)
     max=ceiling(max(data[,'NB'],na.rm = TRUE)*10)/10
     # if (max < 1) max=1
     ylim=c(-max*0.38,max)
-    p <- ggplot(data,aes_string(x='thresholds',y='NB',group='model'))
+    p <- ggplot2::ggplot(data,aes_string(x='thresholds',y='NB',group='model'))
     # both logical
     if (is.logical(color) & is.logical(linetype)){
         if (color & linetype){

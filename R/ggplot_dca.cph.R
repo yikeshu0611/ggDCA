@@ -1,29 +1,24 @@
-#' Plot Decision Curve
-
-#' @param data results of dca() function
-#'
-#' @param color logical, whether models will be classified by color
-#' @param linetype logical, whether models will be classified by line type
-#' @param lwd line width
-#'
-#' @importFrom ggplot2 ggplot aes_string geom_line ylim theme_classic xlab ylab element_blank theme
-#' @importFrom ggplot2 facet_wrap scale_size_manual
+#' @importFrom ggplot2 ggplot aes_string geom_line xlim ylim theme_classic xlab ylab element_blank theme
+#' @importFrom ggplot2 facet_wrap scale_size_manual scale_linetype_manual scale_color_manual
 #' @importFrom rms cph
+#' @rdname ggplot
 #' @method ggplot dca.cph
-#' @return a ggplot2 picture
 #' @export
 #'
 ggplot.dca.cph <- function(data,
+                           mapping,
                            color=TRUE,
                            linetype=TRUE,
-                           lwd=1.05){
+                           lwd=1.05,
+                           ...,
+                           environment = parent.frame()){
     opt <- options(warn = -1)
     class=class(data)
     data=as.data.frame(data)
     max=ceiling(max(data[,'NB'],na.rm = TRUE)*10)/10
     # if (max < 1) max=1
     ylim=c(-max*0.38,max)
-    p <- ggplot(data,aes_string(x='thresholds',y='NB',group='model'))
+    p <- ggplot2::ggplot(data,aes_string(x='thresholds',y='NB',group='model'))
     # both logical
     if (is.logical(color) & is.logical(linetype)){
         if (color & linetype){
