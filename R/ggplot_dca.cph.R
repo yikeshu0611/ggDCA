@@ -1,7 +1,15 @@
+#' @title Plot for decision curve
+#' @param data resultes of dca() function
+#' @param mapping ignore
+#' @param color logical or colors
+#' @param linetype logical or integers
+#' @param lwd logical or integers
+#' @param ... ignore
+#' @param environment ignore
+#' @rdname ggplot
 #' @importFrom ggplot2 ggplot aes_string geom_line xlim ylim theme_classic xlab ylab element_blank theme
 #' @importFrom ggplot2 facet_wrap scale_size_manual scale_linetype_manual scale_color_manual
 #' @importFrom rms cph
-#' @rdname ggplot
 #' @method ggplot dca.cph
 #' @export
 #'
@@ -12,7 +20,6 @@ ggplot.dca.cph <- function(data,
                            lwd=1.05,
                            ...,
                            environment = parent.frame()){
-    opt <- options(warn = -1)
     class=class(data)
     data=as.data.frame(data)
     max=ceiling(max(data[,'NB'],na.rm = TRUE)*10)/10
@@ -247,7 +254,6 @@ ggplot.dca.cph <- function(data,
         theme(legend.title=element_blank())+
         ylim(ylim)
     return(p)
-    options(opt)
 }
 
 

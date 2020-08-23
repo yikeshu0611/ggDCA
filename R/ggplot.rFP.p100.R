@@ -1,5 +1,14 @@
-#' @method ggplot rFP.p100
+#' @title Plot for decision curve
+#' @param data resultes of dca() function
+#' @param mapping ignore
+#' @param color logical or colors
+#' @param linetype logical or integers
+#' @param lwd logical or integers
+#' @param ... ignore
+#' @param environment ignore
 #' @rdname ggplot
+#'
+#' @method ggplot rFP.p100
 #' @export
 ggplot.rFP.p100 <- function(data,
                             mapping,
@@ -8,7 +17,6 @@ ggplot.rFP.p100 <- function(data,
                             lwd=1.05,
                             ...,
                             environment = parent.frame()){
-    opt <- options(warn = -1)
     data=as.data.frame(data)
     p <- ggplot2::ggplot(data,aes_string(x='thresholds',
                                 y='rFP.p100',group='model'))
@@ -234,6 +242,5 @@ ggplot.rFP.p100 <- function(data,
         ylab('Reduction in False Positive Count(%)')+
         theme(legend.title=element_blank())
     return(p)
-    options(opt)
 }
 
