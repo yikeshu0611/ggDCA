@@ -22,6 +22,7 @@ ggplot.dca.cph <- function(data,
                            environment = parent.frame()){
     class=class(data)
     data=as.data.frame(data)
+    data=data[data$thresholds!=0,]
     max=ceiling(max(data[,'NB'],na.rm = TRUE)*10)/10
     # if (max < 1) max=1
     ylim=c(-max*0.38,max)

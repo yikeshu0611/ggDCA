@@ -6,7 +6,7 @@ dca.cph <- function(...,
                 test.harm=0,
                 new.data=NULL,
                 times='median'){
-    fit.list=list(...)
+    fit.list<<-list(...)
     if (length(fit.list)==0) return(NULL)
     if (length(test.harm)==1) test.harm=rep(test.harm,length(fit.list))
     all='All'
@@ -133,8 +133,9 @@ thresholds.cph <- function(fit,time='median',model.name=NULL,new.data=NULL,test.
     filter.data=lapply(filter, function(i) data[i,])
     txt=paste0('survfit(',names(fit$model)[1],'~1,data=i)')
     survfitted=lapply(filter.data, function(i) eval(parse(text=txt)))
-    TPR.row=1-sapply(survfitted, function(i) ifelse(is.null(summary(i,time)$surv),
-                                                  0,summary(i,time)$surv))
+    TPR.row=1-sapply(survfitted, function(i) ifelse(is.null(tryCatch(summary(i,time)$surv, error=function(e) 0)),
+                                                    0,
+                                                    tryCatch(summary(i,time)$surv, error=function(e) 0)))
     FPR.row=1-TPR.row
     TP=pred.Positive*TPR.row
     FP=pred.Positive*FPR.row

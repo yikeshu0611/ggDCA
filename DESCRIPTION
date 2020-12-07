@@ -1,6 +1,6 @@
 Package: ggDCA
 Title: Calculate and Plot Decision Curve
-Version: 1.0
+Version: 1.2
 Authors@R: 
     c(
     person("Jing","Zhang",role = c("aut", "cre"),email = "zj391120@163.com"),
@@ -23,7 +23,7 @@ RoxygenNote: 7.1.1
 Imports: 
     do,
     set,
-    rms,
+    rms (>= 6.0.1),
     base.rms,
     survival (>= 3.1-12)
 Depends: 
